@@ -2,83 +2,29 @@
 // SPDX-FileCopyrightText: 2026 Wakana Kisarazu <wakanakisarazu.work@gmail.com>
 const std = @import("std");
 const debug = std.debug;
-const HashMap = std.HashMap;
 const crypto = std.crypto;
-const Random = std.Random;
+const Io = std.Io;
 const process = std.process;
 
 
 
-fn initRandom(seed: u64) Random
+const Node = struct 
 {
-    var rng = Random.DefaultPrng.init(seed);
-    return rng.random();
-}
-
-
-const Connection = struct 
-{
-    const Kind = enum {
-        partner,
-        family,
-        friend,
-
-        fn toString(this: @This()) []const u8 {
-            return switch (this) {
-                .partner => "partner",
-                .family => "family",
-                .friend => "friend",
-            };
-        }
-    };
-
-    uuid: u64,
-
-    kind: Kind,
-    people: [2]Person,
-
-    fn init(uuid: u64, kind: Kind, people: [2]Person) @This() {
-        return .{
-            .uuid = uuid,
-
-            .kind = kind,
-            .people = people,
-        };
-    }
-
-    fn show(this: @This()) void {
-        debug.print(
-            \\ UUID: {X}
-            \\
-            \\ Connection kind: {s}
-            \\ Connection between: {any}
-            \\
-        , .{this.uuid, this.kind.toString(), this.peoplemv});
-    }
+    unique_id: [32]u8,
+    public_key: [32]u8,
+    name_tag: []const u8,
 };
 
-const Person = struct
+const Identity = struct 
 {
-    uuid: u64,
-    name: []const u8,
-
-    fn init(uuid: u64, name: []const u8) @This() {
-        return .{
-            .uuid = uuid,
-            .name = name,
-        };
-    }
+    key_pair: crypto.sign.Ed25519.KeyPair,
+    node: Node,
 };
 
 
-pub fn main() void
-{
-    var random = initRandom(2938474732819);
-    
-    const taylor = Person.init(random.int(u64), "Taylor");
-    const rose = Person.init(random.int(u64), "Rose");
-
-    const taylor_rose = Connection.init(random.int(u64), .partner, .{taylor, rose});
-
-    taylor_rose.show();
+pub fn main(init: process.Init) void
+{   
+    // Fuck sake.
+    // This is complex, fun to learn crypto tho.
+    // :3
 }
